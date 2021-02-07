@@ -85,7 +85,45 @@ namespace DoctorAppointment.Controllers
             DoctorAppointmentContext dbcx = new DoctorAppointmentContext();
             var obj = dbcx.User.First(u => u.UserName == userid);
             var obj1 = dbcx.Appointment.Where(a => a.userId == obj.Id).ToList();
-            return Ok(obj1);
+            var obj2 = (from us in dbcx.User
+                        join
+   ap in dbcx.Appointment on us.Id equals ap.userId
+                        join
+hp in dbcx.Hospital on Convert.ToInt32(ap.hospital) equals hp.id
+                        join
+dc in dbcx.Doctor on hp.id equals dc.hid
+                        where ap.userId == obj.Id
+                        select new Appointment
+                        {
+                            Aid = ap.Aid,
+                            doa = ap.doa,
+                            doctor = dc.name,
+                            hospital = hp.hospital,
+                            state = ap.state == "A" ? "Active" : "Cancelled",
+                            time = ap.time,
+                            userId = ap.userId
+                        }).ToList();
+            return Ok(obj2);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("api/Appointment/GetHospitals")]
+        public IActionResult GetHospitals()
+        {
+            DoctorAppointmentContext dbcx = new DoctorAppointmentContext();
+
+            return Ok(dbcx.Hospital.ToList());
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("api/Appointment/GetDoctors/{id:int}")]
+        public IActionResult GetDoctors([FromRoute]int id)
+        {
+            DoctorAppointmentContext dbcx = new DoctorAppointmentContext();
+
+            return Ok(dbcx.Doctor.Where(d => d.hid == id).ToList());
         }
     }
 }

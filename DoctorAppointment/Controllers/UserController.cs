@@ -27,6 +27,7 @@ namespace DoctorAppointment.Controllers
             var lstUser =  userDBC.User.ToList();
             return lstUser;
         }
+
         [HttpPost]
         [Route("api/User/RegisterUser")]
         public IActionResult RegisterUser([FromBody]User user)
@@ -34,7 +35,7 @@ namespace DoctorAppointment.Controllers
             DoctorAppointmentContext userDbc = new DoctorAppointmentContext();
             userDbc.Add(user);
             userDbc.SaveChanges();
-            return Ok("Registration Successful!");
+            return Ok();
         }
 
         [HttpPost]

@@ -11,6 +11,8 @@ namespace DoctorAppointment.DatabaseContexts
     {
         public DbSet<User> User { get; set; }
         public DbSet<Appointment> Appointment { get; set; }
+        public DbSet<Hospital> Hospital { get; set; }
+        public DbSet<Doctor> Doctor { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

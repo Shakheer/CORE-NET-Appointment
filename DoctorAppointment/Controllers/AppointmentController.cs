@@ -88,22 +88,32 @@ namespace DoctorAppointment.Controllers
             var obj2 = (from us in dbcx.User
                         join
    ap in dbcx.Appointment on us.Id equals ap.userId
-                        join
-hp in dbcx.Hospital on Convert.ToInt32(ap.hospital) equals hp.id
-                        join
-dc in dbcx.Doctor on hp.id equals dc.hid
-                        where ap.userId == obj.Id
+                        where us.Id == obj.Id
                         select new Appointment
                         {
                             Aid = ap.Aid,
                             doa = ap.doa,
-                            doctor = dc.name,
-                            hospital = hp.hospital,
+                            doctor = GetDoctorName(ap.doctor),
+                            hospital = GetHospitalName(ap.hospital),
                             state = ap.state == "A" ? "Active" : "Cancelled",
                             time = ap.time,
                             userId = ap.userId
                         }).ToList();
             return Ok(obj2);
+        }
+
+        private static string GetHospitalName(string hospital)
+        {
+            DoctorAppointmentContext dbcx1 = new DoctorAppointmentContext();
+            var hospi = dbcx1.Hospital.FirstOrDefault(hos => hos.id == Convert.ToInt32(hospital));
+            return hospi.hospital;
+        }
+
+        private static string GetDoctorName(string doctor)
+        {
+            DoctorAppointmentContext dbcx2 = new DoctorAppointmentContext();
+            var doci = dbcx2.Doctor.FirstOrDefault(hos => hos.did == Convert.ToInt32(doctor));
+            return doci.name;
         }
 
         [HttpGet]
